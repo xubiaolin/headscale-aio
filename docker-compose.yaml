@@ -1,0 +1,53 @@
+services:
+  headscale:
+    image: headscale/headscale:latest
+    restart: unless-stopped
+    container_name: headscale
+    ports:
+      - "$HEADSCALE_PORT:8080"
+      # - "127.0.0.1:9090:9090"
+    volumes:
+      - './headscale-data:/var/lib/headscale'
+      - './headscale-config:/etc/headscale'
+    command: serve
+
+  headplane:
+    # I recommend you pin the version to a specific release
+    image: ghcr.io/tale/headplane:latest
+    container_name: headplane
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    volumes:
+      - './headplane-config/config.yaml:/etc/headplane/config.yaml'
+      - './headscale-config/config.yaml:/etc/headscale/config.yaml'
+      - '/var/run/docker.sock:/var/run/docker.sock:ro'
+
+  derper:
+    image: fredliang/derper:latest
+    container_name: derper
+    environment:
+      - DERP_DOMAIN=$DERP_DOMAIN
+      - DERP_CERT_MODE=manual
+      - DERP_ADDR=:$DERP_PORT
+      - DERP_STUN=true
+      - DERP_STUN_PORT=$DERP_STUN_PORT
+      - DERP_VERIFY_CLIENTS=false
+      - DERP_VERIFY_CLIENT_URL=$DERP_VERIFY_CLIENT_URL
+    ports:
+      - "$DERP_PORT:$DERP_PORT"
+      - "$DERP_STUN_PORT:$DERP_STUN_PORT/udp"
+    volumes:
+      - ./certs:/app/certs
+    restart: unless-stopped
+
+  derp-file:
+    image: nginx:alpine:latest
+    container_name: derp-file
+    ports:
+      - "8480:80"
+    volumes:
+      - ./static-file:/usr/share/nginx/html/
+    restart: unless-stopped
+
+
