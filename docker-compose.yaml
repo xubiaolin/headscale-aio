@@ -42,7 +42,7 @@ services:
     restart: unless-stopped
 
   derp-file:
-    image: nginx:alpine:latest
+    image: nginx:alpine
     container_name: derp-file
     ports:
       - "8480:80"

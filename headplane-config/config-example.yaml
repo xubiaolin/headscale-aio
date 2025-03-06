@@ -70,22 +70,22 @@ integration:
 
 # OIDC Configuration for simpler authentication
 # (This is optional, but recommended for the best experience)
-oidc:
-    issuer: "https://accounts.google.com"
-    client_id: "your-client-id"
-    client_secret: "<your-client-secret>"
-    disable_api_key_login: false
-    token_endpoint_auth_method: "client_secret_post"
+# oidc:
+#     issuer: "https://accounts.google.com"
+#     client_id: "your-client-id"
+#     client_secret: "<your-client-secret>"
+#     disable_api_key_login: false
+#     token_endpoint_auth_method: "client_secret_post"
 
-    # If you are using OIDC, you need to generate an API key
-    # that can be used to authenticate other sessions when signing in.
-    #
-    # This can be done with `headscale apikeys create --expiration 999d`
-    headscale_api_key: "<your-headscale-api-key>"
+#     # If you are using OIDC, you need to generate an API key
+#     # that can be used to authenticate other sessions when signing in.
+#     #
+#     # This can be done with `headscale apikeys create --expiration 999d`
+#     headscale_api_key: "<your-headscale-api-key>"
 
-    # Optional, but highly recommended otherwise Headplane
-    # will attempt to automatically guess this from the issuer
-    #
-    # This should point to your publicly accessibly URL
-    # for your Headplane instance with /admin/oidc/callback
-    redirect_uri: "http://localhost:3000/admin/oidc/callback"
+#     # Optional, but highly recommended otherwise Headplane
+#     # will attempt to automatically guess this from the issuer
+#     #
+#     # This should point to your publicly accessibly URL
+#     # for your Headplane instance with /admin/oidc/callback
+#     redirect_uri: "http://localhost:3000/admin/oidc/callback"
