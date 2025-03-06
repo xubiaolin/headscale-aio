@@ -1,2 +1,5 @@
-.env
-certs/
+/.env
+/certs/
+
+/headplane-config/config.yaml
+/headscale-config/config.yaml
