@@ -102,11 +102,7 @@ gen_cert() {
         local alt_name="DNS:${DERP_DOMAIN}"
     fi
 
-    openssl req -x509 -newkey rsa:4096 -sha256 -days 36500 -nodes \
-        -keyout "${DERP_DOMAIN}.key" \
-        -out "${DERP_DOMAIN}.crt" \
-        -subj "/CN=${DERP_DOMAIN}" \
-        -addext "subjectAltName=${alt_name}"
+    openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes -keyout ${DERP_DOMAIN}.key -out ${DERP_DOMAIN}.crt -subj "/CN=${DERP_DOMAIN}" -addext "subjectAltName=IP:${DERP_DOMAIN}"
 
     cd ..
     log_info "为 ${DERP_DOMAIN} 生成证书成功"
