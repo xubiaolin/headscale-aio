@@ -38,7 +38,7 @@ services:
       - "$DERP_PORT:$DERP_PORT"
       - "$DERP_STUN_PORT:$DERP_STUN_PORT/udp"
     volumes:
-      - ./certs:/app/certs
+      - ./certs/:/app/certs/
     restart: unless-stopped
 
   derp-file:
