@@ -135,6 +135,7 @@ gen_config() {
     yq -i -y ".server_url = \"http://${DERP_DOMAIN}:${HEADSCALE_PORT}\"" headscale-config/config.yaml
     yq -i -y ".listen_addr = \"0.0.0.0:${HEADSCALE_PORT}\"" headscale-config/config.yaml
     yq -i -y ".randomize_client_port = true" headscale-config/config.yaml
+    yq -i -y ".derp.urls += [\"http://${DERP_DOMAIN}:8480/derp.json\"]" headscale-config/config.yaml
 
     # Headplane配置
     cp headplane-config/config-example.yaml headplane-config/config.yaml
@@ -150,9 +151,10 @@ gen_derp_config() {
     source .env
     cp static-file/derp-example.json static-file/derp.json
     jq --arg name "$DERP_DOMAIN" '.Regions."901".Nodes[0].Name = $name' static-file/derp.json >temp.json && mv temp.json static-file/derp.json
-    jq --arg port "$DERP_PORT" '.Regions."901".Nodes[0].DERPPort = $port' static-file/derp.json >temp.json && mv temp.json static-file/derp.json
+    jq --argjson port "$DERP_PORT" '.Regions."901".Nodes[0].DERPPort = $port' static-file/derp.json >temp.json && mv temp.json static-file/derp.json
     jq --arg hostname "$DERP_DOMAIN" '.Regions."901".Nodes[0].HostName = $hostname' static-file/derp.json >temp.json && mv temp.json static-file/derp.json
     jq '.Regions."901".Nodes[0].InsecureForTests = true' static-file/derp.json >temp.json && mv temp.json static-file/derp.json
+    jq --argjson port "$DERP_STUN_PORT" '.Regions."901".Nodes[0].STUNPort = $port' static-file/derp.json >temp.json && mv temp.json static-file/derp.json
     log_info "DERP配置文件生成成功"
 }
 
@@ -184,10 +186,7 @@ deploy() {
     fi
 
     log_info "启动容器..."
-    if ! docker compose up -d; then
-        log_error "启动失败"
-        exit 1
-    fi
+    restart
 
     log_info "检查服务状态..."
     sleep 5

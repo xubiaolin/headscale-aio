@@ -9,6 +9,7 @@
                     "Name": "901a",
                     "RegionID": 901,
                     "DERPPort": 13445,
+                    "STUNPort": 3478,
                     "HostName": "1.1.1.1/example.com",
                     "InsecureForTests": true
                 }
@@ -16,3 +17,6 @@
         }
     }
 }
+
+
+  

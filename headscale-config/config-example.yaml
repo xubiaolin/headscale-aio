@@ -120,8 +120,8 @@ derp:
   # https://tailscale.com/kb/1118/custom-derp-servers/
   #
   # paths:
-  #   - /etc/headscale/derp-example.yaml
-  paths: []
+  #   - /etc/headscale/derp.yaml
+  # paths: []
 
   # If enabled, a worker will be set up to periodically
   # refresh the given sources and update the derpmap

@@ -11,17 +11,17 @@ services:
       - './headscale-config:/etc/headscale'
     command: serve
 
-  headplane:
-    # I recommend you pin the version to a specific release
-    image: ghcr.io/tale/headplane:latest
-    container_name: headplane
-    restart: unless-stopped
-    ports:
-      - '3000:3000'
-    volumes:
-      - './headplane-config/config.yaml:/etc/headplane/config.yaml'
-      - './headscale-config/config.yaml:/etc/headscale/config.yaml'
-      - '/var/run/docker.sock:/var/run/docker.sock:ro'
+  # headplane:
+  #   # I recommend you pin the version to a specific release
+  #   image: ghcr.io/tale/headplane:latest
+  #   container_name: headplane
+  #   restart: unless-stopped
+  #   ports:
+  #     - '3000:3000'
+  #   volumes:
+  #     - './headplane-config/config.yaml:/etc/headplane/config.yaml'
+  #     - './headscale-config/config.yaml:/etc/headscale/config.yaml'
+  #     - '/var/run/docker.sock:/var/run/docker.sock:ro'
 
   derper:
     image: fredliang/derper:latest
@@ -45,7 +45,7 @@ services:
     image: nginx:alpine
     container_name: derp-file
     ports:
-      - "8480:80"
+      - "$DERP_FILE_PORT:80"
     volumes:
       - ./static-file:/usr/share/nginx/html/
     restart: unless-stopped
