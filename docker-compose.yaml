@@ -33,7 +33,7 @@ services:
       - DERP_STUN=true
       - DERP_STUN_PORT=$DERP_STUN_PORT
       - DERP_VERIFY_CLIENTS=false
-      - DERP_VERIFY_CLIENT_URL=$DERP_VERIFY_CLIENT_URL
+      - DERP_VERIFY_CLIENT_URL=http://${DERP_DOMAIN}:${HEADSCALE_PORT}/verify
     ports:
       - "$DERP_PORT:$DERP_PORT"
       - "$DERP_STUN_PORT:$DERP_STUN_PORT/udp"
