@@ -202,6 +202,10 @@ deploy() {
     log_info "Headscale地址: http://${DERP_DOMAIN}:${HEADSCALE_PORT}/windows"
     log_info "DERP 地址: https://${DERP_DOMAIN}:${DERP_PORT}"
 
+    log_info "请确保以下端口已放行:
+    - ${HEADSCALE_PORT}: Headscale Web界面
+    - ${DERP_PORT}: DERP服务
+    - ${DERP_STUN_PORT}/udp: DERP STUN服务"
 }
 
 # 重启服务
