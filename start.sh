@@ -149,10 +149,10 @@ gen_config() {
 gen_derp_config() {
     source .env
     cp static-file/derp-example.json static-file/derp.json
-    jq --arg name "$DERP_DOMAIN" '.Regions."901".Nodes[0].Name = $name' static-file/derp.json > temp.json && mv temp.json static-file/derp.json
-    jq --arg port "$DERP_PORT" '.Regions."901".Nodes[0].DERPPort = $port' static-file/derp.json > temp.json && mv temp.json static-file/derp.json
-    jq --arg hostname "$DERP_DOMAIN" '.Regions."901".Nodes[0].HostName = $hostname' static-file/derp.json > temp.json && mv temp.json static-file/derp.json
-    jq '.Regions."901".Nodes[0].InsecureForTests = true' static-file/derp.json > temp.json && mv temp.json static-file/derp.json
+    jq --arg name "$DERP_DOMAIN" '.Regions."901".Nodes[0].Name = $name' static-file/derp.json >temp.json && mv temp.json static-file/derp.json
+    jq --arg port "$DERP_PORT" '.Regions."901".Nodes[0].DERPPort = $port' static-file/derp.json >temp.json && mv temp.json static-file/derp.json
+    jq --arg hostname "$DERP_DOMAIN" '.Regions."901".Nodes[0].HostName = $hostname' static-file/derp.json >temp.json && mv temp.json static-file/derp.json
+    jq '.Regions."901".Nodes[0].InsecureForTests = true' static-file/derp.json >temp.json && mv temp.json static-file/derp.json
     log_info "DERP配置文件生成成功"
 }
 
@@ -169,7 +169,7 @@ deploy() {
     read -p "是否全新部署? (y/n) " choice
     if [ "${choice,,}" = "y" ]; then
         log_info "清空数据目录..."
-        rm -rf headscale-data/* 
+        rm -rf headscale-data/*
         log_info "数据目录已清空"
     fi
 
@@ -189,9 +189,19 @@ deploy() {
         exit 1
     fi
 
+    log_info "检查服务状态..."
+    sleep 5
+    if docker compose ps | grep -q "Restarting"; then
+        log_error "存在服务正在重启,请检查服务日志"
+        docker compose ps
+        exit 1
+    fi
+    log_info "所有服务运行正常"
+
     log_info "启动成功"
     log_info "Headscale地址: http://${DERP_DOMAIN}:${HEADSCALE_PORT}/windows"
     log_info "DERP 地址: https://${DERP_DOMAIN}:${DERP_PORT}"
+
 }
 
 # 重启服务
