@@ -117,6 +117,7 @@ gen_config() {
     log_info "DERP端口: ${DERP_PORT}"
     log_info "STUN端口: ${DERP_STUN_PORT}"
     log_info "Headscale端口: ${HEADSCALE_PORT}"
+    log_info "DERP文件端口: ${DERP_FILE_PORT}"
 
     read -p "是否继续? (y/n) " choice
     if [ "${choice,,}" != "y" ]; then
@@ -198,9 +199,10 @@ deploy() {
     log_info "DERP 地址: https://${DERP_DOMAIN}:${DERP_PORT}"
 
     log_info "请确保以下端口已放行:
-    - ${HEADSCALE_PORT}: Headscale Web界面
-    - ${DERP_PORT}: DERP服务
-    - ${DERP_STUN_PORT}/udp: DERP STUN服务"
+    - ${HEADSCALE_PORT}/tcp: Headscale Web界面
+    - ${DERP_PORT}/tcp: DERP服务
+    - ${DERP_STUN_PORT}/udp: DERP STUN服务
+    - ${DERP_FILE_PORT}/tcp: DERP文件服务"
 }
 
 # 重启服务
