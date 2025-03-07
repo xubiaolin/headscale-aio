@@ -62,7 +62,7 @@ install_tool() {
 
 # 检查并安装必要工具
 check_utils() {
-    local tools=("openssl" "yq")
+    local tools=("openssl" "yq" "jq")
     for tool in "${tools[@]}"; do
         if ! command -v $tool &>/dev/null; then
             log_warn "未找到 $tool 命令"
@@ -146,6 +146,16 @@ gen_config() {
     log_info "配置文件生成成功"
 }
 
+gen_derp_config() {
+    source .env
+    cp static-file/derp-example.json static-file/derp.json
+    jq --arg name "$DERP_DOMAIN" '.Regions."901".Nodes[0].Name = $name' static-file/derp.json > temp.json && mv temp.json static-file/derp.json
+    jq --arg port "$DERP_PORT" '.Regions."901".Nodes[0].DERPPort = $port' static-file/derp.json > temp.json && mv temp.json static-file/derp.json
+    jq --arg hostname "$DERP_DOMAIN" '.Regions."901".Nodes[0].HostName = $hostname' static-file/derp.json > temp.json && mv temp.json static-file/derp.json
+    jq '.Regions."901".Nodes[0].InsecureForTests = true' static-file/derp.json > temp.json && mv temp.json static-file/derp.json
+    log_info "DERP配置文件生成成功"
+}
+
 # 部署服务
 deploy() {
     check_env
@@ -159,12 +169,17 @@ deploy() {
     read -p "是否全新部署? (y/n) " choice
     if [ "${choice,,}" = "y" ]; then
         log_info "清空数据目录..."
-        rm -rf headscale-data/* static-file/*
+        rm -rf headscale-data/* 
         log_info "数据目录已清空"
     fi
 
     if ! gen_config; then
         log_error "生成配置文件失败"
+        exit 1
+    fi
+
+    if ! gen_derp_config; then
+        log_error "生成DERP配置文件失败"
         exit 1
     fi
 
