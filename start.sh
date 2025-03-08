@@ -102,7 +102,7 @@ gen_cert() {
         local alt_name="DNS:${DERP_DOMAIN}"
     fi
 
-    openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes -keyout ${DERP_DOMAIN}.key -out ${DERP_DOMAIN}.crt -subj "/CN=${DERP_DOMAIN}" -addext "subjectAltName=IP:${DERP_DOMAIN}"
+    openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes -keyout ${DERP_DOMAIN}.key -out ${DERP_DOMAIN}.crt -subj "/CN=${DERP_DOMAIN}" -addext "subjectAltName=${alt_name}"
 
     cd ..
     log_info "为 ${DERP_DOMAIN} 生成证书成功"
@@ -128,18 +128,20 @@ gen_config() {
     log_info "生成配置文件..."
 
     # Headscale配置
-    cp headscale-config/config-example.yaml headscale-config/config.yaml
-    yq -i -y ".server_url = \"http://${DERP_DOMAIN}:${HEADSCALE_PORT}\"" headscale-config/config.yaml
-    yq -i -y ".listen_addr = \"0.0.0.0:${HEADSCALE_PORT}\"" headscale-config/config.yaml
-    yq -i -y ".randomize_client_port = true" headscale-config/config.yaml
-    yq -i -y ".derp.urls += [\"http://${DERP_DOMAIN}:8480/derp.json\"]" headscale-config/config.yaml
+    cp headscale/config/config-example.yaml headscale/config/config.yaml
+    yq eval ".server_url = \"http://${DERP_DOMAIN}:${HEADSCALE_PORT}\"" -i headscale/config/config.yaml
+    yq eval ".listen_addr = \"0.0.0.0:${HEADSCALE_PORT}\"" -i headscale/config/config.yaml
+    yq eval ".randomize_client_port = true" -i headscale/config/config.yaml
+    yq eval ".derp.urls += [\"http://${DERP_DOMAIN}:8480/derp.json\"]" -i headscale/config/config.yaml
 
     # Headplane配置
-    cp headplane-config/config-example.yaml headplane-config/config.yaml
+    cp headplane/config/config-example.yaml headplane/config/config.yaml
     local cookie_secret=$(openssl rand -base64 32 | tr -d '/+' | cut -c1-32)
-    yq -i -y ".server.cookie_secret = \"${cookie_secret}\"" headplane-config/config.yaml
-    yq -i -y ".headscale.url = \"http://headscale:${HEADSCALE_PORT}\"" headplane-config/config.yaml
-    yq -i -y ".integration.docker.enabled = true" headplane-config/config.yaml
+    yq eval ".server.cookie_secret = \"${cookie_secret}\"" -i headplane/config/config.yaml
+    yq eval ".headscale.url = \"http://headscale:${HEADSCALE_PORT}\"" -i headplane/config/config.yaml
+    yq eval ".integration.docker.enabled = true" -i headplane/config/config.yaml
+    yq eval ".server.cookie_secure = false" -i headplane/config/config.yaml
+
 
     log_info "配置文件生成成功"
 }
@@ -168,7 +170,7 @@ deploy() {
     read -p "是否全新部署? (y/n) " choice
     if [ "${choice,,}" = "y" ]; then
         log_info "清空数据目录..."
-        rm -rf headscale-data/*
+        rm -rf headscale/data/*
         log_info "数据目录已清空"
     fi
 

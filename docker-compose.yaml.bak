@@ -1,4 +1,16 @@
 services:
+  headscale:
+    image: headscale/headscale:latest
+    restart: unless-stopped
+    container_name: headscale
+    ports:
+      - "$HEADSCALE_PORT:8080"
+      # - "127.0.0.1:9090:9090"
+    volumes:
+      - './headscale-data:/var/lib/headscale'
+      - './headscale-config:/etc/headscale'
+    command: serve
+
   headplane:
     # I recommend you pin the version to a specific release
     image: ghcr.io/tale/headplane:latest
@@ -7,19 +19,10 @@ services:
     ports:
       - '3000:3000'
     volumes:
-      - './headplane/config/config.yaml:/etc/headplane/config.yaml'
-      - './headscale/config/config.yaml:/etc/headscale/config.yaml'
+      - './headplane-config/config.yaml:/etc/headplane/config.yaml'
+      - './headscale-config/config.yaml:/etc/headscale/config.yaml'
       - '/var/run/docker.sock:/var/run/docker.sock:ro'
-  headscale:
-    image: headscale/headscale:latest
-    container_name: headscale
-    restart: unless-stopped
-    command: serve
-    ports:
-      - '8080:8080'
-    volumes:
-      - './headscale/data:/var/lib/headscale'
-      - './headscale/config:/etc/headscale'
+
   derper:
     image: xubiaolin/derp-docker:latest
     container_name: derper
@@ -46,4 +49,5 @@ services:
     volumes:
       - ./static-file:/usr/share/nginx/html/
     restart: unless-stopped
+
 
