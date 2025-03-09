@@ -1,7 +1,9 @@
 .env
 /certs/
 
-/headplane-config/config.yaml
-/headscale-config/config.yaml
-/headscale-data
 /static-file/derp.json
+/headscale/config/config.yaml
+/headplane/config/config.yaml
+
+/headscale/data
+/headplane/data
